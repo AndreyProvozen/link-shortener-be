@@ -1,27 +1,35 @@
 import LinkService from "../services/link.service.js";
-import CustomError from "../utils/customError.js";
+import errorWrapper from "../utils/errorWrapper.js";
 
 class LinkController {
-  async create(req, res) {
-    try {
-      const post = await LinkService.create(req.body.url);
-      res.json(post);
-    } catch (error) {
-      if (error instanceof CustomError) {
-        return res.status(error.statusCode).json({ message: error.message });
-      }
+  create = errorWrapper(async (req, res) => {
+    const { url, email } = req.body;
 
-      res.status(500).json(error);
-    }
-  }
+    const shortLinkData = await LinkService.create(url, email);
+    res.json(shortLinkData);
+  });
 
-  async getAll(req, res) {}
+  getOne = errorWrapper(async (req, res) => {
+    const { code } = req.params;
 
-  async getOne(req, res) {}
+    const link = await LinkService.getOne(code);
+    res.json(link);
+  });
 
-  async update(req, res) {}
+  delete = errorWrapper(async (req, res) => {
+    const { code } = req.params;
+    const { email } = req.body;
 
-  async delete(req, res) {}
+    const deletedLink = await LinkService.delete(code, email);
+    res.json(deletedLink);
+  });
+
+  getAll = errorWrapper(async (req, res) => {
+    const { email } = req.query;
+
+    const links = await LinkService.getAll(email);
+    res.json(links);
+  });
 }
 
 export default new LinkController();
