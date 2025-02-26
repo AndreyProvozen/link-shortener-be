@@ -1,9 +1,12 @@
+import { EMAIL_REGEXP } from "../constants/regexp.js";
 import User from "../models/User.js";
 import CustomError from "../utils/customError.js";
 
 class UserService {
-  async create(userData) {
-    const { email, name, image } = userData;
+  async create({ email, name, image }) {
+    if (!EMAIL_REGEXP.test(email)) {
+      throw new CustomError("Invalid email address", 400);
+    }
 
     const user = await User.create({ email, name, image });
     return user;
@@ -15,10 +18,6 @@ class UserService {
   }
 
   async addLinkToUser(email, linkCode) {
-    if (!email || !linkCode) {
-      throw new CustomError("Email and linkCode are required", 400);
-    }
-
     const user = await this.findUserByEmail(email);
 
     user.userLinks.push(linkCode);
@@ -28,10 +27,6 @@ class UserService {
   }
 
   async removeLinkFromUser(email, linkCode) {
-    if (!email || !linkCode) {
-      throw new CustomError("Email and linkCode are required", 400);
-    }
-
     const user = await this.findUserByEmail(email);
 
     user.userLinks = user.userLinks.filter((code) => code !== linkCode);

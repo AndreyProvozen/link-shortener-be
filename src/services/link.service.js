@@ -11,9 +11,7 @@ class LinkService {
 
     const isExistingLink = await Link.findOne({ url });
 
-    if (isExistingLink) {
-      throw new CustomError("URL already exists", 409);
-    }
+    if (isExistingLink) throw new CustomError("URL already exists", 409);
 
     const createdLink = await Link.create({ url });
 
@@ -30,9 +28,7 @@ class LinkService {
   async delete(code, email) {
     const link = await Link.findOneAndDelete({ code });
 
-    if (!link) {
-      throw new CustomError("Link not found", 404);
-    }
+    if (!link) throw new CustomError("Link not found", 404);
 
     await UserService.removeLinkFromUser(email, code);
 
