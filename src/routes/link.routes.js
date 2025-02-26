@@ -3,9 +3,9 @@ import LinkController from "../controllers/link.controller.js";
 
 const router = new Router();
 
-router.post("/links", LinkController.create);
-router.get("/links/:code", LinkController.getOne);
-router.get("/links", LinkController.getAll);
-router.delete("/links/:code", LinkController.delete);
+router.post("/links", LinkController.createLink);
+router.get("/links/:code", LinkController.getLinkByCode);
+router.get("/links", LinkController.getUserLinks);
+router.delete("/links/:code", LinkController.deleteLink);
 
 export default router;

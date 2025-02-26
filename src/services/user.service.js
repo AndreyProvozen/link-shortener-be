@@ -8,12 +8,17 @@ class UserService {
       throw new CustomError("Invalid email address", 400);
     }
 
+    const existingUser = await User.findOne({ email });
+    if (existingUser) throw new CustomError("User already exists", 409);
+
     const user = await User.create({ email, name, image });
     return user;
   }
 
   async findUserByEmail(email) {
     const user = await User.findOne({ email });
+    if (!user) throw new CustomError("User not found", 404);
+
     return user;
   }
 

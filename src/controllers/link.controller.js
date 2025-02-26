@@ -2,32 +2,23 @@ import LinkService from "../services/link.service.js";
 import errorWrapper from "../utils/errorWrapper.js";
 
 class LinkController {
-  create = errorWrapper(async (req, res) => {
-    const { url, email } = req.body;
-
-    const shortLinkData = await LinkService.create(url, email);
-    res.json(shortLinkData);
+  createLink = errorWrapper(async ({ body }, res) => {
+    const shortLinkData = await LinkService.createLink(body);
+    res.status(201).json(shortLinkData);
   });
 
-  getOne = errorWrapper(async (req, res) => {
-    const { code } = req.params;
-
-    const link = await LinkService.getOne(code);
+  getLinkByCode = errorWrapper(async ({ params }, res) => {
+    const link = await LinkService.getLinkByCode(params.code);
     res.json(link);
   });
 
-  delete = errorWrapper(async (req, res) => {
-    const { code } = req.params;
-    const { email } = req.body;
-
-    const deletedLink = await LinkService.delete(code, email);
+  deleteLink = errorWrapper(async ({ params, body }, res) => {
+    const deletedLink = await LinkService.deleteLink(params.code, body.email);
     res.json(deletedLink);
   });
 
-  getAll = errorWrapper(async (req, res) => {
-    const { email } = req.query;
-
-    const links = await LinkService.getAll(email);
+  getUserLinks = errorWrapper(async ({ query }, res) => {
+    const links = await LinkService.getUserLinks(query.email);
     res.json(links);
   });
 }

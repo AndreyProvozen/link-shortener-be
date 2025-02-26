@@ -1,12 +1,10 @@
-import userService from "../services/user.service.js";
+import UserService from "../services/user.service.js";
 import errorWrapper from "../utils/errorWrapper.js";
 
 class UserController {
-  create = errorWrapper(async (req, res) => {
-    const userData = req.body;
-
-    const user = await userService.create(userData);
-    res.json(user);
+  create = errorWrapper(async ({ body }, res) => {
+    const user = await UserService.create(body);
+    res.status(201).json(user);
   });
 }
 
