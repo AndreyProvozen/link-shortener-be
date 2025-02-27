@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { EMAIL_REGEXP } from "../constants/regexp";
+import { EMAIL_REGEXP } from "../constants/regexp.js";
 
 const User = new Schema(
   {

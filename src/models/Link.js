@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import { nanoid } from "nanoid";
-import { LINK_REGEXP } from "../constants/regexp";
+import { LINK_REGEXP } from "../constants/regexp.js";
 
 const Link = new Schema(
   {
@@ -15,7 +15,7 @@ const Link = new Schema(
     },
     code: {
       type: String,
-      default: () => nanoid(7),
+      default: `ls-${nanoid(7)}`,
       required: true,
       unique: true,
       index: true,
