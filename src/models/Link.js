@@ -9,7 +9,7 @@ const Link = new Schema(
       required: true,
       trim: true,
       validate: {
-        validator: (value) => LINK_REGEXP.test(value),
+        validator: value => LINK_REGEXP.test(value),
         message: "Invalid URL format",
       },
     },

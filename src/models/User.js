@@ -10,7 +10,7 @@ const User = new Schema(
       trim: true,
       index: true,
       validate: {
-        validator: (value) => EMAIL_REGEXP.test(value),
+        validator: value => EMAIL_REGEXP.test(value),
         message: "Invalid email format",
       },
     },

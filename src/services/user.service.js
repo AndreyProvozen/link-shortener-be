@@ -34,7 +34,7 @@ class UserService {
   async removeLinkFromUser(email, linkCode) {
     const user = await this.findUserByEmail(email);
 
-    user.userLinks = user.userLinks.filter((code) => code !== linkCode);
+    user.userLinks = user.userLinks.filter(code => code !== linkCode);
     await user.save();
 
     return user;

@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "env": { "node": true, "es6": true },
+  "extends": ["eslint:recommended", "plugin:prettier/recommended"],
+  "plugins": ["prettier"],
+  "parserOptions": { "ecmaVersion": "latest", "sourceType": "module" },
+  "rules": {
+    "no-console": "warn",
+    "no-debugger": "warn",
+    "prefer-const": "error",
+    "no-self-assign": "error",
+    "prettier/prettier": "error",
+    "array-callback-return": "off"
+  },
+  "ignorePatterns": ["dist/", "node_modules/"]
+}
