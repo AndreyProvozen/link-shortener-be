@@ -18,7 +18,7 @@ class LinkController {
   });
 
   getUserLinks = errorWrapper(async ({ query }, res) => {
-    const links = await LinkService.getUserLinks(query.email);
+    const links = await LinkService.getUserLinks(query);
     res.json(links);
   });
 }

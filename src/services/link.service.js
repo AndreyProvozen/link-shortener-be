@@ -36,11 +36,15 @@ class LinkService {
     return link;
   }
 
-  async getUserLinks(email) {
-    const user = await UserService.findUserByEmail(email);
-    const links = await Link.find({ code: { $in: user.userLinks } });
+  async getUserLinks({ email, limit = 10, offset = 0 }) {
+    const offsetNumber = parseInt(offset, 10) ? offset * limit : 0;
 
-    return links;
+    const user = await UserService.findUserByEmail(email);
+    const links = await Link.find({ code: { $in: user.userLinks } })
+      .skip(offsetNumber)
+      .limit(limit);
+
+    return { data: links, count: user.userLinks.length };
   }
 }
 
