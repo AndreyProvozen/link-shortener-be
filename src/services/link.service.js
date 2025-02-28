@@ -1,3 +1,4 @@
+import { nanoid } from "nanoid";
 import { LINK_REGEXP } from "../constants/regexp.js";
 import Link from "../models/Link.js";
 import CustomError from "../utils/customError.js";
@@ -12,7 +13,7 @@ class LinkService {
     const isExistingLink = await Link.findOne({ url });
     if (isExistingLink) throw new CustomError("URL already exists", 409);
 
-    const createdLink = await Link.create({ url });
+    const createdLink = await Link.create({ url, code: `ls-${nanoid(7)}` });
 
     await UserService.addLinkToUser(email, createdLink.code);
 
@@ -36,15 +37,20 @@ class LinkService {
     return link;
   }
 
-  async getUserLinks({ email, limit = 10, offset = 0 }) {
+  async getUserLinks({ email, limit = 10, offset = 0, searchString = "" }) {
     const offsetNumber = parseInt(offset, 10) ? offset * limit : 0;
 
     const user = await UserService.findUserByEmail(email);
-    const links = await Link.find({ code: { $in: user.userLinks } })
-      .skip(offsetNumber)
-      .limit(limit);
+    const query = { code: { $in: user.userLinks } };
 
-    return { data: links, count: user.userLinks.length };
+    if (searchString.trim()) {
+      const searchTerm = searchString.toLowerCase();
+      query.code = { $in: user.userLinks.filter(code => code.toLowerCase().includes(searchTerm)) };
+    }
+
+    const links = await Link.find(query).skip(offsetNumber).limit(limit);
+
+    return { data: links, totalCount: user.userLinks.length };
   }
 }
 

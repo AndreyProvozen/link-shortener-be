@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-import { nanoid } from "nanoid";
 import { LINK_REGEXP } from "../constants/regexp.js";
 
 const Link = new Schema(
@@ -13,15 +12,9 @@ const Link = new Schema(
         message: "Invalid URL format",
       },
     },
-    code: {
-      type: String,
-      default: `ls-${nanoid(7)}`,
-      required: true,
-      unique: true,
-      index: true,
-    },
+    code: { type: String, required: true, unique: true, index: true },
     clicked: { type: Number, default: 0, min: 0 },
-    metrics: [{ title: { type: String, required: true }, data: { type: Schema.Types.Mixed, default: {} } }],
+    metrics: [{ title: { type: String, required: true }, data: { type: Schema.Types.Mixed, default: [] } }],
   },
   { timestamps: true, versionKey: false }
 );
