@@ -15,7 +15,6 @@ const User = new Schema(
       },
     },
     image: { type: String },
-    clicked: { type: Number, default: 0, min: 0 },
     provider: { type: String },
     userLinks: [{ type: String }],
   },

@@ -14,7 +14,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.10.1",
-    "nanoid": "^5.1.2"
+    "nanoid": "^5.1.2",
+    "ua-parser-js": "^1.0.37"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
