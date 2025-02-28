@@ -21,7 +21,7 @@ const Link = new Schema(
       index: true,
     },
     clicked: { type: Number, default: 0, min: 0 },
-    data: { type: Schema.Types.Mixed, default: {} },
+    metrics: [{ title: { type: String, required: true }, data: { type: Schema.Types.Mixed, default: {} } }],
   },
   { timestamps: true, versionKey: false }
 );
