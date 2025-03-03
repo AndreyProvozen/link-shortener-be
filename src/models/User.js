@@ -3,19 +3,21 @@ import { EMAIL_REGEXP } from "../constants/regexp.js";
 
 const User = new Schema(
   {
-    name: { type: String, required: true, trim: true },
+    name: { type: String },
     email: {
       type: String,
       unique: true,
-      trim: true,
+      required: true,
       index: true,
       validate: {
         validator: value => EMAIL_REGEXP.test(value),
         message: "Invalid email format",
       },
     },
+    password: { type: String, required: true },
+    isActivated: { type: Boolean, default: false },
+    activationLink: { type: String },
     image: { type: String },
-    provider: { type: String },
     userLinks: [{ type: String }],
   },
   { timestamps: true, versionKey: false }
