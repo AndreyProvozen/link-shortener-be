@@ -12,7 +12,6 @@ app.use(cookieParser());
 
 app.use("/api", linkRouter);
 app.use("/api", authRouter);
-
 app.use("/", redirectRoutes);
 
 app.use(errorMiddleware);

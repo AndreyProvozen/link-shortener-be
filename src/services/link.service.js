@@ -1,5 +1,4 @@
 import { nanoid } from "nanoid";
-import { LINK_REGEXP } from "../constants/regexp.js";
 import Link from "../models/Link.js";
 import CustomError from "../utils/customError.js";
 import UserService from "./user.service.js";
@@ -7,8 +6,6 @@ import User from "../models/User.js";
 
 class LinkService {
   async createLink({ url, email }) {
-    if (!LINK_REGEXP.test(url)) throw CustomError.BadRequest("Invalid URL. Please provide a valid URL.");
-
     const isExistingLink = await Link.findOne({ url });
     if (isExistingLink) throw CustomError.Conflict("URL already exists");
 

@@ -10,7 +10,7 @@ class CustomError extends Error {
   }
 
   static UnauthorizedError(message) {
-    return new CustomError(401, message);
+    return new CustomError(401, message || "Unauthorized error");
   }
 
   static BadRequest(message, errors = []) {

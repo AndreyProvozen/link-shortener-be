@@ -1,19 +1,9 @@
 import { Schema, model } from "mongoose";
-import { EMAIL_REGEXP } from "../constants/regexp.js";
 
 const User = new Schema(
   {
     name: { type: String },
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-      index: true,
-      validate: {
-        validator: value => EMAIL_REGEXP.test(value),
-        message: "Invalid email format",
-      },
-    },
+    email: { type: String, unique: true, required: true, index: true },
     password: { type: String, required: true },
     isActivated: { type: Boolean, default: false },
     activationLink: { type: String },
