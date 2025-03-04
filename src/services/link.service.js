@@ -6,12 +6,10 @@ import UserService from "./user.service.js";
 
 class LinkService {
   async createLink({ url, email }) {
-    if (!LINK_REGEXP.test(url)) {
-      throw new CustomError("Invalid URL. Please provide a valid URL.", 400);
-    }
+    if (!LINK_REGEXP.test(url)) throw CustomError.BadRequest("Invalid URL. Please provide a valid URL.");
 
     const isExistingLink = await Link.findOne({ url });
-    if (isExistingLink) throw new CustomError("URL already exists", 409);
+    if (isExistingLink) throw CustomError.Conflict("URL already exists");
 
     const createdLink = await Link.create({ url, code: `ls-${nanoid(7)}` });
 
@@ -22,15 +20,14 @@ class LinkService {
 
   async getLinkByCode(code) {
     const link = await Link.findOne({ code });
-    if (!link) throw new CustomError("Link not found", 404);
+    if (!link) throw CustomError.NotFound("Link not found");
 
     return link;
   }
 
   async deleteLink(code, email) {
     const link = await Link.findOneAndDelete({ code });
-
-    if (!link) throw new CustomError("Link not found", 404);
+    if (!link) throw CustomError.NotFound("Link not found");
 
     await UserService.removeLinkFromUser(email, code);
 

@@ -5,13 +5,10 @@ import updateMetricsData from "../utils/updateMetricsData.js";
 
 class RedirectService {
   async redirectToFullLink({ code, userAgent, acceptLanguage, remoteAddress }) {
-    if (!LINK_CODE_REGEXP.test(code)) {
-      throw new CustomError("Invalid code format", 400);
-    }
+    if (!LINK_CODE_REGEXP.test(code)) throw CustomError.BadRequest("Invalid code format");
 
     const link = await Link.findOne({ code });
-
-    if (!link) throw new CustomError("Link not found", 404);
+    if (!link) throw CustomError.NotFound("Link not found");
 
     const updatedMetrics = await updateMetricsData({
       metrics: link.metrics || [],
@@ -24,7 +21,6 @@ class RedirectService {
     link.clicked++;
 
     await link.save();
-
     return link.url;
   }
 }

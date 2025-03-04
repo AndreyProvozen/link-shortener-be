@@ -4,12 +4,10 @@ import CustomError from "../utils/customError.js";
 
 class UserService {
   async create({ email, name, image }) {
-    if (!EMAIL_REGEXP.test(email)) {
-      throw new CustomError("Invalid email address", 400);
-    }
+    if (!EMAIL_REGEXP.test(email)) throw CustomError.BadRequest("Invalid email address");
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) throw new CustomError("User already exists", 409);
+    if (existingUser) throw CustomError.Conflict("User already exists");
 
     const user = await User.create({ email, name, image });
     return user;
@@ -17,26 +15,22 @@ class UserService {
 
   async findUserByEmail(email) {
     const user = await User.findOne({ email });
-    if (!user) throw new CustomError("User not found", 404);
-
     return user;
   }
 
   async addLinkToUser(email, linkCode) {
     const user = await this.findUserByEmail(email);
-
     user.userLinks.push(linkCode);
-    await user.save();
 
+    await user.save();
     return user;
   }
 
   async removeLinkFromUser(email, linkCode) {
     const user = await this.findUserByEmail(email);
-
     user.userLinks = user.userLinks.filter(code => code !== linkCode);
-    await user.save();
 
+    await user.save();
     return user;
   }
 }
