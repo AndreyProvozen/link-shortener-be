@@ -6,9 +6,10 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = new Router();
 
-router.get("/links/:code", param("code").matches(LINK_CODE_REGEXP), LinkController.getLinkByCode);
+router.get("/links/:code", authMiddleware, param("code").matches(LINK_CODE_REGEXP), LinkController.getLinkByCode);
 router.get(
   "/links",
+  authMiddleware,
   query("email").isEmail(),
   query("limit").optional().isInt(),
   query("offset").optional().isInt(),
@@ -16,6 +17,6 @@ router.get(
   LinkController.getUserLinks
 );
 router.post("/links", authMiddleware, body("email").isEmail(), body("url").isURL(), LinkController.createLink);
-router.delete("/links/:code", param("code").matches(LINK_CODE_REGEXP), LinkController.deleteLink);
+router.delete("/links/:code", authMiddleware, param("code").matches(LINK_CODE_REGEXP), LinkController.deleteLink);
 
 export default router;
