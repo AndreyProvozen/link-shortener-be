@@ -1,17 +1,13 @@
 import { nanoid } from "nanoid";
-import { LINK_REGEXP } from "../constants/regexp.js";
 import Link from "../models/Link.js";
 import CustomError from "../utils/customError.js";
 import UserService from "./user.service.js";
+import User from "../models/User.js";
 
 class LinkService {
   async createLink({ url, email }) {
-    if (!LINK_REGEXP.test(url)) {
-      throw new CustomError("Invalid URL. Please provide a valid URL.", 400);
-    }
-
     const isExistingLink = await Link.findOne({ url });
-    if (isExistingLink) throw new CustomError("URL already exists", 409);
+    if (isExistingLink) throw CustomError.Conflict("URL already exists");
 
     const createdLink = await Link.create({ url, code: `ls-${nanoid(7)}` });
 
@@ -22,15 +18,14 @@ class LinkService {
 
   async getLinkByCode(code) {
     const link = await Link.findOne({ code });
-    if (!link) throw new CustomError("Link not found", 404);
+    if (!link) throw CustomError.NotFound("Link not found");
 
     return link;
   }
 
   async deleteLink(code, email) {
     const link = await Link.findOneAndDelete({ code });
-
-    if (!link) throw new CustomError("Link not found", 404);
+    if (!link) throw CustomError.NotFound("Link not found");
 
     await UserService.removeLinkFromUser(email, code);
 
@@ -40,7 +35,7 @@ class LinkService {
   async getUserLinks({ email, limit = 10, offset = 0, searchString = "" }) {
     const offsetNumber = parseInt(offset, 10) ? offset * limit : 0;
 
-    const user = await UserService.findUserByEmail(email);
+    const user = await User.findOne({ email });
     const query = { code: { $in: user.userLinks } };
 
     if (searchString.trim()) {

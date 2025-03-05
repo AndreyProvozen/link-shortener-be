@@ -1,16 +1,12 @@
 import UAParser from "ua-parser-js";
 import getIp from "./getIp.js";
 import getLanguageCode from "./getLanguageCode.js";
-import CustomError from "./customError.js";
 
 const updateMetricsData = async ({ metrics, userAgent, remoteAddress, acceptLanguage }) => {
   const parser = new UAParser(userAgent);
   const { browser, os, device } = parser.getResult();
 
   const ipResponse = await fetch(`http://ip-api.com/json/${getIp(remoteAddress)}?fields=message,country`);
-
-  if (!ipResponse.ok) throw new CustomError("Failed to fetch IP data");
-
   const { country } = await ipResponse.json();
 
   const metricFields = [
