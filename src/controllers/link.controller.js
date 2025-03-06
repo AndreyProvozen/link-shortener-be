@@ -1,51 +1,37 @@
-import { validationResult } from "express-validator";
 import LinkService from "../services/link.service.js";
 import errorWrapper from "../utils/errorWrapper.js";
-import CustomError from "../utils/customError.js";
+import handleValidationErrors from "../utils/handleValidationErrors.js";
 
 class LinkController {
   createLink = errorWrapper(async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    handleValidationErrors(req, next);
 
     const shortLinkData = await LinkService.createLink(req.body);
+
     res.status(201).json(shortLinkData);
   });
 
   getLinkByCode = errorWrapper(async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    handleValidationErrors(req, next);
 
     const link = await LinkService.getLinkByCode(req.params.code);
+
     res.json(link);
   });
 
   deleteLink = errorWrapper(async (req, res, next) => {
-    const { params, body } = req;
-    const errors = validationResult(req);
+    handleValidationErrors(req, next);
 
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    const deletedLink = await LinkService.deleteLink(req.params.code, req.body.email);
 
-    const deletedLink = await LinkService.deleteLink(params.code, body.email);
     res.json(deletedLink);
   });
 
   getUserLinks = errorWrapper(async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    handleValidationErrors(req, next);
 
     const links = await LinkService.getUserLinks(req.query);
+
     res.json(links);
   });
 }

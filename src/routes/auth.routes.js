@@ -6,8 +6,10 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 const router = new Router();
 
-router.post("/signup", body("email").isEmail(), body("password").isLength({ min: 3, max: 32 }), authController.signup);
-router.post("/login", body("email").isEmail(), body("password").isLength({ min: 3, max: 32 }), authController.login);
+const validateCredentials = [body("email").isEmail(), body("password").isLength({ min: 3, max: 32 })];
+
+router.post("/signup", validateCredentials, authController.signup);
+router.post("/login", validateCredentials, authController.login);
 router.post("/logout", authController.logout);
 router.get("/activate/:link", param("link").matches(NANO_ID_REGEXP), authController.activate);
 router.get("/refresh", authMiddleware, authController.refresh);

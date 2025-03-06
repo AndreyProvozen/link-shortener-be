@@ -5,12 +5,16 @@
   "plugins": ["prettier"],
   "parserOptions": { "ecmaVersion": "latest", "sourceType": "module" },
   "rules": {
-    "no-debugger": "warn",
     "prefer-const": "error",
     "no-self-assign": "error",
+    "no-undef": "error",
     "prettier/prettier": "error",
     "array-callback-return": "off",
-    "no-unused-vars": ["error", { "argsIgnorePattern": "next|_" }]
+    "prefer-template": "error",
+    "eqeqeq": ["error", "always"],
+    "no-process-exit": "warn",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "next|_" }],
+    "no-magic-numbers": ["warn", { "ignore": [0, 1, 201, 301, 400, 401, 403, 404, 409, 500] }]
   },
   "ignorePatterns": ["dist/", "node_modules/"]
 }

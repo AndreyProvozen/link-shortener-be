@@ -5,23 +5,28 @@ import bcrypt from "bcrypt";
 import mailService from "./mail.service.js";
 import tokenService from "./token.service.js";
 import UserDto from "../dto/user.dto.js";
+import { BCRYPT_SALT_ROUNDS } from "../constants/global.js";
 
 class AuthService {
+  generateAuthResponse(user) {
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+
+    tokenService.saveToken(userDto.id, tokens.refreshToken);
+    return { ...tokens, user: userDto };
+  }
+
   async signup({ email, password }) {
     const candidate = await User.findOne({ email });
     if (candidate) throw CustomError.Conflict("User already exists");
 
-    const hashedPassword = await bcrypt.hash(password, 3);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
     const activationLink = nanoid();
 
     const user = await User.create({ email, password: hashedPassword, activationLink });
     await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
-    const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    return this.generateAuthResponse(user);
   }
 
   async activate(activationLink) {
@@ -40,32 +45,21 @@ class AuthService {
     const isPassEquals = await bcrypt.compare(password, user.password);
     if (!isPassEquals) throw CustomError.BadRequest("Invalid password");
 
-    const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    return this.generateAuthResponse(user);
   }
 
   async logout(refreshToken) {
-    const token = await tokenService.removeToken(refreshToken);
-    return token;
+    return await tokenService.removeToken(refreshToken);
   }
 
   async refresh(refreshToken) {
-    if (!refreshToken) throw CustomError.UnauthorizedError();
-
     const userData = tokenService.validateRefreshToken(refreshToken);
-    const user = await User.findById(userData.id);
     const tokenFromDb = await tokenService.findToken(refreshToken);
 
     if (!userData || !tokenFromDb) throw CustomError.UnauthorizedError();
 
-    const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({ ...userDto });
-
-    await tokenService.saveToken(userDto.id, tokens.refreshToken);
-    return { ...tokens, user: userDto };
+    const user = await User.findById(userData.id);
+    return this.generateAuthResponse(user);
   }
 }
 

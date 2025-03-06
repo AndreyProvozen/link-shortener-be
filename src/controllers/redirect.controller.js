@@ -1,16 +1,12 @@
-import { validationResult } from "express-validator";
 import redirectService from "../services/redirect.service.js";
 import errorWrapper from "../utils/errorWrapper.js";
-import CustomError from "../utils/customError.js";
+import handleValidationErrors from "../utils/handleValidationErrors.js";
 
 class RedirectController {
   redirectToFullLink = errorWrapper(async (req, res, next) => {
-    const { params, headers, socket } = req;
-    const errors = validationResult(req);
+    handleValidationErrors(req, next);
 
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    const { params, headers, socket } = req;
 
     const fullLink = await redirectService.redirectToFullLink({
       userAgent: headers["user-agent"],

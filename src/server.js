@@ -4,7 +4,7 @@ import connectMongoDB from "./config/connectMongoDB.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT;
 
 const startServer = async () => {
   try {
