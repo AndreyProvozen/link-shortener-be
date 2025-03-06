@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import mailService from "./mail.service.js";
 import tokenService from "./token.service.js";
 import UserDto from "../dto/user.dto.js";
+import { BCRYPT_SALT_ROUNDS } from "../constants/global.js";
 
 class AuthService {
   generateAuthResponse(user) {
@@ -19,7 +20,7 @@ class AuthService {
     const candidate = await User.findOne({ email });
     if (candidate) throw CustomError.Conflict("User already exists");
 
-    const hashedPassword = await bcrypt.hash(password, 3);
+    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
     const activationLink = nanoid();
 
     const user = await User.create({ email, password: hashedPassword, activationLink });

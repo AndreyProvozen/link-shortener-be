@@ -14,7 +14,7 @@
     "eqeqeq": ["error", "always"],
     "no-process-exit": "warn",
     "no-unused-vars": ["error", { "argsIgnorePattern": "next|_" }],
-    "no-magic-numbers": ["warn", { "ignore": [0, 1] }]
+    "no-magic-numbers": ["warn", { "ignore": [0, 1, 201, 301, 400, 401, 403, 404, 409, 500] }]
   },
   "ignorePatterns": ["dist/", "node_modules/"]
 }

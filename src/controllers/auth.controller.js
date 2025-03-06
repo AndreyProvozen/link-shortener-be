@@ -1,3 +1,4 @@
+import { REFRESH_TOKEN_EXPIRATION_MS } from "../constants/global.js";
 import authService from "../services/auth.service.js";
 import CustomError from "../utils/customError.js";
 import errorWrapper from "../utils/errorWrapper.js";
@@ -5,7 +6,7 @@ import handleValidationErrors from "../utils/handleValidationErrors.js";
 
 class AuthController {
   setRefreshToken = (res, refreshToken) => {
-    res.cookie("refreshToken", refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+    res.cookie("refreshToken", refreshToken, { maxAge: REFRESH_TOKEN_EXPIRATION_MS, httpOnly: true });
   };
 
   signup = errorWrapper(async (req, res, next) => {
