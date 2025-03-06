@@ -24,6 +24,10 @@ class CustomError extends Error {
   static Conflict(message) {
     return new CustomError(409, message);
   }
+
+  static Forbidden(message) {
+    return new CustomError(403, message);
+  }
 }
 
 export default CustomError;

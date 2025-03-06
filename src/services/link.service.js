@@ -6,11 +6,10 @@ import User from "../models/User.js";
 
 class LinkService {
   async createLink({ url, email }) {
-    const isExistingLink = await Link.findOne({ url });
+    const isExistingLink = await Link.exists({ url });
     if (isExistingLink) throw CustomError.Conflict("URL already exists");
 
     const createdLink = await Link.create({ url, code: `ls-${nanoid(7)}` });
-
     await UserService.addLinkToUser(email, createdLink.code);
 
     return createdLink;
@@ -24,11 +23,13 @@ class LinkService {
   }
 
   async deleteLink(code, email) {
+    const user = await User.findOne({ email });
+    if (!user?.userLinks.includes(code)) throw CustomError.Forbidden("You don't have access to this link");
+
     const link = await Link.findOneAndDelete({ code });
     if (!link) throw CustomError.NotFound("Link not found");
 
     await UserService.removeLinkFromUser(email, code);
-
     return link;
   }
 
@@ -44,7 +45,6 @@ class LinkService {
     }
 
     const links = await Link.find(query).skip(offsetNumber).limit(limit);
-
     return { data: links, totalCount: user.userLinks.length };
   }
 }

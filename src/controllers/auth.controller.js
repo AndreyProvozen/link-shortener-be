@@ -1,56 +1,56 @@
-import { validationResult } from "express-validator";
 import authService from "../services/auth.service.js";
-import errorWrapper from "../utils/errorWrapper.js";
 import CustomError from "../utils/customError.js";
+import errorWrapper from "../utils/errorWrapper.js";
+import handleValidationErrors from "../utils/handleValidationErrors.js";
 
 class AuthController {
+  setRefreshToken = (res, refreshToken) => {
+    res.cookie("refreshToken", refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+  };
+
   signup = errorWrapper(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    handleValidationErrors(req, next);
 
     const userData = await authService.signup(req.body);
 
-    res.cookie("refreshToken", userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+    this.setRefreshToken(res, userData.refreshToken);
     res.json(userData);
   });
 
   activate = errorWrapper(async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    handleValidationErrors(req, next);
 
     await authService.activate(req.params.link);
-    return res.redirect(process.env.CLIENT_URL);
+
+    res.redirect(process.env.CLIENT_URL);
   });
 
   login = errorWrapper(async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return next(CustomError.BadRequest("Validation error", errors.array()));
-    }
+    handleValidationErrors(req, next);
 
     const userData = await authService.login(req.body);
 
-    res.cookie("refreshToken", userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+    this.setRefreshToken(res, userData.refreshToken);
     res.json(userData);
   });
 
   logout = errorWrapper(async (req, res) => {
-    const token = await authService.logout(req.cookies.refreshToken);
-    res.clearCookie("refreshToken");
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) throw CustomError.UnauthorizedError();
 
-    res.json(token);
+    await authService.logout(refreshToken);
+
+    res.clearCookie("refreshToken");
+    res.json({ message: "User logged out" });
   });
 
   refresh = errorWrapper(async (req, res) => {
-    const userData = await authService.refresh(req.cookies.refreshToken);
-    res.cookie("refreshToken", userData.refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true });
+    const { refreshToken } = req.cookies;
+    if (!refreshToken) throw CustomError.UnauthorizedError();
 
+    const userData = await authService.refresh(req.cookies.refreshToken);
+
+    this.setRefreshToken(res, userData.refreshToken);
     res.json(userData);
   });
 }
