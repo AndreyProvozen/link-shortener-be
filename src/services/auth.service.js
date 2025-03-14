@@ -34,6 +34,8 @@ class AuthService {
     if (!user) throw CustomError.BadRequest("Invalid activation link");
 
     user.isActivated = true;
+    user.activationLink = null;
+
     await user.save();
   }
 

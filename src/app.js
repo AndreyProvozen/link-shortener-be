@@ -25,7 +25,7 @@ app.use(limiter);
 
 app.use("/api", linkRouter);
 app.use("/api", authRouter);
-app.use("/", redirectRoutes);
+app.use("/api", redirectRoutes);
 
 app.use(errorMiddleware);
 
