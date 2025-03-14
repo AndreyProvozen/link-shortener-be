@@ -23,7 +23,7 @@ class AuthController {
 
     await authService.activate(req.params.link);
 
-    res.redirect(process.env.CLIENT_URL);
+    res.redirect(`${process.env.CLIENT_URL}/activation/success`);
   });
 
   login = errorWrapper(async (req, res, next) => {
