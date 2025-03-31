@@ -2,8 +2,11 @@
 export const LOCALHOST_ADDRESSES = ["::1", "127.0.0.1"];
 export const IP_LIST_FOR_LOCALHOST = ["161.184.29.248", "185.237.74.247", "195.140.184.24", "1.32.231.255"];
 
+export const ACCESS_TOKEN_KEY = "LS_ACCESS_TOKEN";
+export const REFRESH_TOKEN_KEY = "LS_REFRESH_TOKEN";
+
 export const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
-export const RATE_LIMIT_MAX_REQUESTS = 100;
+export const RATE_LIMIT_MAX_REQUESTS = 1000;
 
 export const REFRESH_TOKEN_EXPIRATION_MS = 30 * 24 * 60 * 60 * 1000;
 
