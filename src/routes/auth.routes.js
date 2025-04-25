@@ -7,7 +7,7 @@ const router = new Router();
 
 const validateCredentials = [body("email").isEmail(), body("password").isLength({ min: 3, max: 32 })];
 
-router.post("/signup", validateCredentials, authController.signup);
+router.post("/signup", [...validateCredentials, body("username").exists()], authController.signup);
 router.post("/login", validateCredentials, authController.login);
 router.post("/logout", authController.logout);
 router.get("/activate/:link", param("link").matches(NANO_ID_REGEXP), authController.activate);

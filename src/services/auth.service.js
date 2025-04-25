@@ -16,19 +16,22 @@ class AuthService {
     return { ...tokens, user: userDto };
   }
 
-  async signup({ email, password }) {
-    const candidate = await User.findOne({ email });
-    if (candidate) throw CustomError.Conflict("User already exists");
+  async signup({ email, password, username }) {
+    const [existingEmail, existingUsername, hashedPassword] = await Promise.all([
+      User.findOne({ email }),
+      User.findOne({ username }),
+      bcrypt.hash(password, BCRYPT_SALT_ROUNDS),
+    ]);
 
-    const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
+    if (existingEmail) throw CustomError.Conflict("User with this email already exists");
+    if (existingUsername) throw CustomError.Conflict("Username is already taken");
+
     const activationLink = nanoid();
-
-    const user = await User.create({ email, password: hashedPassword, activationLink });
+    const user = await User.create({ email, password: hashedPassword, username, activationLink });
     await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
     return this.generateAuthResponse(user);
   }
-
   async activate(activationLink) {
     const user = await User.findOne({ activationLink });
     if (!user) throw CustomError.BadRequest("Invalid activation link");
