@@ -12,10 +12,9 @@ class AuthController {
   signup = errorWrapper(async (req, res, next) => {
     handleValidationErrors(req, next);
 
-    const userData = await authService.signup(req.body);
+    await authService.signup(req.body);
 
-    this.setRefreshToken(res, userData.refreshToken);
-    res.json(userData);
+    res.sendStatus(204);
   });
 
   activate = errorWrapper(async (req, res, next) => {
@@ -54,6 +53,11 @@ class AuthController {
 
     this.setRefreshToken(res, userData.refreshToken);
     res.json(userData);
+  });
+
+  check = errorWrapper(async (req, res) => {
+    const user = await authService.check(req?.user?.id);
+    res.json({ user });
   });
 }
 
