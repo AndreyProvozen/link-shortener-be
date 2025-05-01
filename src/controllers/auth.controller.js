@@ -1,4 +1,4 @@
-import { REFRESH_TOKEN_EXPIRATION_MS, REFRESH_TOKEN_KEY } from "../constants/global.js";
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_EXPIRATION_MS, REFRESH_TOKEN_KEY } from "../constants/global.js";
 import authService from "../services/auth.service.js";
 import CustomError from "../utils/customError.js";
 import errorWrapper from "../utils/errorWrapper.js";
@@ -12,10 +12,9 @@ class AuthController {
   signup = errorWrapper(async (req, res, next) => {
     handleValidationErrors(req, next);
 
-    const userData = await authService.signup(req.body);
+    await authService.signup(req.body);
 
-    this.setRefreshToken(res, userData.refreshToken);
-    res.json(userData);
+    res.sendStatus(204);
   });
 
   activate = errorWrapper(async (req, res, next) => {
@@ -42,6 +41,7 @@ class AuthController {
     await authService.logout(refreshToken);
 
     res.clearCookie(REFRESH_TOKEN_KEY);
+    res.clearCookie(ACCESS_TOKEN_KEY);
     res.json({ message: "User logged out" });
   });
 
@@ -54,6 +54,11 @@ class AuthController {
 
     this.setRefreshToken(res, userData.refreshToken);
     res.json(userData);
+  });
+
+  check = errorWrapper(async (req, res) => {
+    const user = await authService.check(req?.user?.id);
+    res.json({ user });
   });
 }
 

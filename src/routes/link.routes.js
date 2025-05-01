@@ -7,8 +7,6 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 const router = new Router();
 
 const validateLinkCode = param("code").matches(LINK_CODE_REGEXP);
-const validateEmail = body("email").isEmail();
-const validateQueryEmail = query("email").isEmail();
 const validatePagination = [
   query("limit").optional().isInt(),
   query("offset").optional().isInt(),
@@ -16,8 +14,8 @@ const validatePagination = [
 ];
 
 router.get("/links/:code", authMiddleware, validateLinkCode, LinkController.getLinkByCode);
-router.get("/links", authMiddleware, validateQueryEmail, ...validatePagination, LinkController.getUserLinks);
-router.post("/links", authMiddleware, validateEmail, body("url").isURL(), LinkController.createLink);
+router.get("/links", authMiddleware, validatePagination, LinkController.getUserLinks);
+router.post("/links", authMiddleware, body("url").isURL(), LinkController.createLink);
 router.delete("/links/:code", authMiddleware, validateLinkCode, LinkController.deleteLink);
 
 export default router;

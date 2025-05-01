@@ -27,11 +27,13 @@ class AuthService {
     if (existingUsername) throw CustomError.Conflict("Username is already taken");
 
     const activationLink = nanoid();
-    const user = await User.create({ email, password: hashedPassword, username, activationLink });
-    await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`);
 
-    return this.generateAuthResponse(user);
+    await Promise.all([
+      User.create({ email, password: hashedPassword, username, activationLink }),
+      mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`),
+    ]);
   }
+
   async activate(activationLink) {
     const user = await User.findOne({ activationLink });
     if (!user) throw CustomError.BadRequest("Invalid activation link");
@@ -65,6 +67,15 @@ class AuthService {
 
     const user = await User.findById(userData.id);
     return this.generateAuthResponse(user);
+  }
+
+  async check(id) {
+    if (!id) throw CustomError.UnauthorizedError();
+
+    const user = await User.findById(id);
+    if (!user || !user.isActivated) throw CustomError.UnauthorizedError();
+
+    return new UserDto(user);
   }
 }
 
