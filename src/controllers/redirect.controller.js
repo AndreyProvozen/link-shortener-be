@@ -15,7 +15,6 @@ class RedirectController {
       remoteAddress: socket.remoteAddress,
     });
 
-    res.setHeader("Cache-Control", "no-cache, max-age=0");
     res.redirect(301, fullLink);
   });
 }

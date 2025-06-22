@@ -34,19 +34,24 @@ class LinkService {
     return link;
   }
 
-  async getUserLinks({ email, limit = DEFAULT_LIMIT, offset = 0, searchString = "" }) {
-    const offsetNumber = parseInt(offset, 10) ? offset * limit : 0;
+  async getUserLinks({ favoriteList = [], email, limit = DEFAULT_LIMIT, offset = 0, searchString = "", favorite }) {
+    const isFavorite = favorite === "true";
+    const offsetNumber = Number(offset) > 0 ? offset * limit : 0;
 
     const user = await User.findOne({ email });
-    const query = { code: { $in: user.userLinks } };
+
+    const baseList = isFavorite ? favoriteList : user.userLinks;
+    let filteredCodes = baseList;
 
     if (searchString.trim()) {
       const searchTerm = searchString.toLowerCase();
-      query.code = { $in: user.userLinks.filter(code => code.toLowerCase().includes(searchTerm)) };
+      filteredCodes = baseList.filter(code => code.toLowerCase().includes(searchTerm));
     }
 
+    const query = { code: { $in: filteredCodes } };
     const links = await Link.find(query).skip(offsetNumber).limit(limit);
-    return { data: links, totalCount: user.userLinks.length };
+
+    return { data: links, totalCount: filteredCodes.length };
   }
 }
 

@@ -1,3 +1,4 @@
+import { FAVORITE_LIST_KEY } from "../constants/global.js";
 import LinkService from "../services/link.service.js";
 import errorWrapper from "../utils/errorWrapper.js";
 import handleValidationErrors from "../utils/handleValidationErrors.js";
@@ -29,8 +30,9 @@ class LinkController {
 
   getUserLinks = errorWrapper(async (req, res, next) => {
     handleValidationErrors(req, next);
+    const favoriteList = JSON.parse(req.cookies[FAVORITE_LIST_KEY]) || [];
 
-    const links = await LinkService.getUserLinks({ email: req.user.email, ...req.query });
+    const links = await LinkService.getUserLinks({ favoriteList, email: req.user.email, ...req.query });
 
     res.json(links);
   });

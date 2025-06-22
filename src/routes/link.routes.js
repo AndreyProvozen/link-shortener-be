@@ -10,6 +10,7 @@ const validateLinkCode = param("code").matches(LINK_CODE_REGEXP);
 const validatePagination = [
   query("limit").optional().isInt(),
   query("offset").optional().isInt(),
+  query("favorite").optional().isBoolean(),
   query("searchString").optional().isString().trim(),
 ];
 
